@@ -1,0 +1,8 @@
+<Solution>
+  <Configurations>
+    <Platform Name="x64" />
+    <Platform Name="x86" />
+  </Configurations>
+  <Project Path="CustomCPlusLogger.Console/CustomCPlusLogger.Console.vcxproj" Id="951f7cbf-9f07-49ed-b45b-d220c8b1a51e" />
+  <Project Path="CustomCPlusLogger/CustomCPlusLogger.vcxproj" Id="52edade0-9c38-494c-b1fc-42a61f16e05a" />
+</Solution>
