@@ -3,6 +3,20 @@
 #include "FileLogger.h"
 
 #include <iostream>
+#include <stdexcept>
+#include <string>
+
+int divide(int numerator, int denominator)
+{
+    if (denominator == 0)
+    {
+        throw std::runtime_error(
+            "Cannot divide by zero."
+        );
+    }
+
+    return numerator / denominator;
+}
 
 int main()
 {
@@ -14,48 +28,76 @@ int main()
         ccpl::ConsoleLogger consoleLogger(config);
         ccpl::FileLogger fileLogger(config);
 
-        consoleLogger.info("Application started");
-        fileLogger.info("Application started");
+        consoleLogger.info("Logger test application started.");
+        fileLogger.info("Logger test application started.");
 
-        consoleLogger.debug(
-            "Testing debug logging",
-            "Console debug test"
-        );
-
-        fileLogger.debug(
-            "Testing debug logging",
-            "File debug test"
-        );
-
+        // Test optional information.
         consoleLogger.warning(
-            "This is a warning",
-            "Testing optional information"
+            "Testing optional troubleshooting information.",
+            "This message contains additional context."
         );
 
         fileLogger.warning(
-            "This is a warning",
-            "Testing optional information"
+            "Testing optional troubleshooting information.",
+            "This message contains additional context."
         );
 
-        consoleLogger.error(
-            "Something went wrong",
-            "Test error details"
+        // Test exception handling and critical logging.
+        try
+        {
+            const int result = divide(10, 0);
+
+            std::cout << result << '\n';
+        }
+        catch (const std::exception& exception)
+        {
+            consoleLogger.critical(
+                "A critical exception occurred.",
+                exception.what()
+            );
+
+            fileLogger.critical(
+                "A critical exception occurred.",
+                exception.what()
+            );
+        }
+
+        consoleLogger.info("Exception test completed.");
+        fileLogger.info("Exception test completed.");
+
+        // Test rollover functionality.
+        //
+        // Set MaxFileSizeMB = 1 in logger.config so the test
+        // can force rollover without generating huge files.
+        const std::string rolloverMessage(
+            10000,
+            'X'
         );
 
-        fileLogger.error(
-            "Something went wrong",
-            "Test error details"
+        for (int index = 1; index <= 500; ++index)
+        {
+            const std::string message =
+                "Rollover test entry " +
+                std::to_string(index);
+
+            fileLogger.info(
+                message,
+                rolloverMessage
+            );
+        }
+
+        consoleLogger.info(
+            "Rollover test completed.",
+            "Check the configured log directory for rollover files."
         );
 
-        consoleLogger.critical(
-            "Critical test message"
+        fileLogger.info(
+            "Rollover test completed.",
+            "The logger should have created multiple files."
         );
 
-        fileLogger.critical(
-            "Critical test message"
-        );
-
-        std::cout << "\nLogger test completed successfully.\n";
+        consoleLogger.info("Logger test application completed.");
+        fileLogger.info("Logger test application completed.");
     }
     catch (const std::exception& exception)
     {

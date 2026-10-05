@@ -10,5 +10,6 @@ namespace ccpl
         bool isFileLoggerEnabled = false;
         std::string path;
         std::string fileName;
+        std::size_t maxFileSizeMB = 10;
     };
 }

@@ -3,6 +3,7 @@
 #include "Logger.h"
 #include "LoggerConfig.h"
 
+#include <filesystem>
 #include <fstream>
 #include <mutex>
 
@@ -26,6 +27,13 @@ namespace ccpl
         std::ofstream logFile;
         std::mutex logMutex;
 
+        std::string currentDate;
+        std::filesystem::path currentFilePath;
+
+        std::filesystem::path buildFilePath(const std::string& date, int rolloverIndex) const;
+        std::string getCurrentDate() const;
+        std::uintmax_t getMaxFileSizeBytes() const;
         void openLogFile();
+        void rolloverIfNeeded();
     };
 }

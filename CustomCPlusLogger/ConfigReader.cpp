@@ -7,6 +7,19 @@
 
 namespace ccpl
 {
+    // Reads logger configuration settings from a configuration file
+    // and maps the supported values into a LoggerConfig object.
+    //
+    // The configuration file uses a simple key/value format:
+    //
+    //   IsConsoleLoggerEnabled = true
+    //   IsFileLoggerEnabled = true
+    //   Path = Logs
+    //   FileName = application.log
+    //   MaxFileSizeMB = 10
+    //
+    // ConfigReader also validates configuration values and reports
+    // invalid or unsupported settings before the loggers are created.
     LoggerConfig ConfigReader::load(const std::string& filePath)
     {
         std::ifstream configFile(filePath);
@@ -94,6 +107,27 @@ namespace ccpl
             {
                 config.fileName = value;
             }
+            else if (key == "MaxFileSizeMB")
+            {
+                try
+                {
+                    config.maxFileSizeMB =
+                        static_cast<std::size_t>(std::stoull(value));
+                }
+                catch (...)
+                {
+                    throw std::runtime_error(
+                        "MaxFileSizeMB must be a valid positive whole number."
+                    );
+                }
+
+                if (config.maxFileSizeMB == 0)
+                {
+                    throw std::runtime_error(
+                        "MaxFileSizeMB must be greater than 0."
+                    );
+                }
+            }
             else
             {
                 throw std::runtime_error(
@@ -122,6 +156,7 @@ namespace ccpl
         return config;
     }
 
+    // Removes whitespace from the beginning and end of a configuration value.
     std::string ccpl::ConfigReader::trim(const std::string& value)
     {
         const std::string whitespace = " \t\r\n";
